@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Moon, Sun, Lock, Bell, Shield, Trash2, KeyRound } from 'lucide-react';
+import { Moon, Sun, Bell, Shield, Trash2, KeyRound } from 'lucide-react';
 
 const SettingsPage = () => {
   const [isDark, setIsDark] = useState<boolean>(false);

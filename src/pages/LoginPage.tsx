@@ -20,7 +20,7 @@ const LoginPage = () => {
   const from = (location.state as any)?.from?.pathname || '/dashboard';
   
   // Get verification message from location state
-  const verificationMessage = (location.state as any)?.message;
+  // const verificationMessage = (location.state as any)?.message;
 
   // Clean up any stray Google buttons when component mounts
   useEffect(() => {

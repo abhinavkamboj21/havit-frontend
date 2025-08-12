@@ -15,7 +15,8 @@ import {
   TrendingUp,
   Zap,
   Crown,
-  Award
+  Award,
+  AlertCircle
 } from 'lucide-react';
 
 interface Achievement {

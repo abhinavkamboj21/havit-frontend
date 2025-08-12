@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Clock, DollarSign, Calendar, AlertCircle, CheckCircle, ArrowRight } from 'lucide-react';
+import { Clock, DollarSign, AlertCircle, CheckCircle, ArrowRight } from 'lucide-react';
 
 const ChallengePage = () => {
   const { user } = useAuth();
