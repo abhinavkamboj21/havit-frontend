@@ -1,0 +1,15 @@
+version: '3.9'
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        # Provide your values or rely on defaults
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8080/api/v1}
+        VITE_RAZORPAY_KEY_ID: ${VITE_RAZORPAY_KEY_ID:-rzp_test_1234567890}
+    image: havit-frontend:latest
+    container_name: havit-frontend
+    ports:
+      - "8080:80"
+    restart: unless-stopped
