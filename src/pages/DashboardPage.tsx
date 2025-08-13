@@ -952,7 +952,7 @@ Your payment may have been processed successfully on Razorpay's side. Please che
                         )}
                         
                         {/* Window is BEFORE - Show countdown to opening */}
-                        {timeWindowInfo.status === 'before' && (
+                {timeWindowInfo.status === 'before' && (
                           <div>
                             <div className="flex items-center space-x-2 mb-3">
                               <Clock className="w-4 h-4 text-cyan-600" />
@@ -976,19 +976,12 @@ Your payment may have been processed successfully on Razorpay's side. Please che
                               </div>
                             </div>
                             
-                            <p className="text-xs text-cyan-700 bg-cyan-50 rounded-lg p-2">
-                              💡 Window opens from {(() => {
-                                const [hours, minutes] = fallbackTodayChallenge.wakeUpTime.split(':').map(Number);
-                                const wakeUp = new Date();
-                                wakeUp.setHours(hours, minutes - 15, 0, 0);
-                                return wakeUp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                              })()} to {(() => {
-                                const [hours, minutes] = fallbackTodayChallenge.wakeUpTime.split(':').map(Number);
-                                const wakeUp = new Date();
-                                wakeUp.setHours(hours, minutes + 10, 0, 0);
-                                return wakeUp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                              })()} - Get ready!
-                            </p>
+                    <p className="text-xs text-cyan-700 bg-cyan-50 rounded-lg p-2">
+                      💡 Window: {new Date((fallbackTodayChallenge as any).gracePeriodStartTime || '').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      {' '}–{' '}
+                      {new Date((fallbackTodayChallenge as any).gracePeriodEndTime || '').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      {' '}Get ready!
+                    </p>
                           </div>
                         )}
                         
@@ -1105,9 +1098,9 @@ Your payment may have been processed successfully on Razorpay's side. Please che
 
                 {fallbackTodayChallenge.status === 'COMPLETED' && fallbackTodayChallenge.isSuccessful && (
                   <div className="bg-success-50 border border-success-200 rounded-lg p-4">
-                    <p className="text-success-700 font-medium">
-                      🎉 Congratulations! You completed your challenge! You will receive your winnings in your wallet by 3pm.
-                    </p>
+                      <p className="text-success-700 font-medium">
+                        🎉 Congratulations! You completed your challenge! You will receive your winnings in your wallet by 3 PM.
+                      </p>
                   </div>
                 )}
 

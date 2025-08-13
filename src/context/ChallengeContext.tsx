@@ -14,6 +14,8 @@ interface Challenge {
   isSuccessful: boolean;
   canCheckIn: boolean;
   isWithinGracePeriod: boolean;
+  gracePeriodStartTime?: string;
+  gracePeriodEndTime?: string;
   isOverdue: boolean;
   timeRemainingMinutes?: number;
   checkInTime?: string;
