@@ -170,7 +170,7 @@ const RegisterPage = () => {
             Back to Home
           </Link>
           
-          <div className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+          <div className="w-16 h-16 bg-gradient-to-br from-cyan-600 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
             <Mail className="w-8 h-8 text-white" />
           </div>
           
@@ -306,7 +306,7 @@ const RegisterPage = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="bg-cyan-500 hover:bg-cyan-600 text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg w-full flex justify-center items-center"
+                className="btn-primary w-full flex justify-center items-center"
               >
                 {isLoading ? 'Creating Account...' : 'Create Account'}
               </button>

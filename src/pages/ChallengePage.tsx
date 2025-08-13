@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Clock, DollarSign, AlertCircle, CheckCircle, ArrowRight } from 'lucide-react';
+import { Clock, IndianRupee, AlertCircle, CheckCircle, ArrowRight } from 'lucide-react';
 
 const ChallengePage = () => {
   const { user } = useAuth();
@@ -113,7 +113,9 @@ const ChallengePage = () => {
           <div>
             <label className="block text-sm font-medium text-morning-700 mb-4">
               <div className="flex items-center space-x-2 mb-2">
-                <DollarSign className="w-5 h-5 text-cyan-600" />
+                <span className="p-2 rounded-md icon-chip text-white inline-flex">
+                  <IndianRupee className="w-4 h-4" />
+                </span>
                 <span>Forfeit Amount</span>
               </div>
             </label>

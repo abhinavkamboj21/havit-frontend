@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useChallenge } from '../context/ChallengeContext';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { walletAPI, challengeAPI, streaksAPI } from '../utils/api';
 import { 
   Clock, 
-  DollarSign, 
+  IndianRupee, 
   Target, 
   Calendar,
   ArrowRight,
@@ -21,7 +21,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Flame,
-  Zap
+  Zap,
+  Info
 } from 'lucide-react';
 
 // Helper function to get local date (timezone-aware)
@@ -208,6 +209,11 @@ const DashboardPage = () => {
   const [walletError, setWalletError] = useState('');
   // Local verifying state to control action buttons
   const [verifying, setVerifying] = useState(false);
+  // Toggle to show all history items
+  const [showAllHistory, setShowAllHistory] = useState(false);
+  // Verification info visibility
+  const [showVerificationInfo, setShowVerificationInfo] = useState(false);
+  const [isVerificationInfoHovered, setIsVerificationInfoHovered] = useState(false);
   
   // Calendar modal state
   const [showCalendar, setShowCalendar] = useState(false);
@@ -347,43 +353,7 @@ const DashboardPage = () => {
     }
   };
 
-  const handleQuickCompletion = async (challenge: any) => {
-    if (!challenge) return;
-    
-    try {
-      console.log('⚡ Quick completion for challenge:', challenge.id);
-      const result = await verifyChallenge(challenge.id, {
-        verificationMethod: 'MANUAL',
-        checkInLocation: 'Quick Completion',
-        notes: 'Completed during time window'
-      });
-      
-      console.log('✅ Quick completion result:', result);
-      
-      // Handle AI verification results (same as detailed verification)
-      if (result.data && result.data.isSuccessful) {
-        const winnings = result.data.winningsAmount || 0;
-        alert(`🎉 Challenge Completed Successfully!\n\n🏆 Amazing! You woke up on time and earned ₹${winnings.toFixed(2)}\n\nGreat job maintaining your wake-up schedule! 💪`);
-        console.log(`💰 Challenge winnings: ₹${winnings}`);
-      } else if (result.data && !result.data.isSuccessful) {
-        const forfeitAmount = challenge.forfeitAmount || 0;
-        const refundAmount = forfeitAmount * 0.85;
-        alert(`😔 Challenge verification failed\n\n💰 You'll receive ₹${refundAmount.toFixed(2)} as a refund (85% of your forfeit amount).\n\nKeep trying - you'll get there! 💪`);
-        console.log(`💸 Challenge refund: ₹${refundAmount} (85% of ₹${forfeitAmount})`);
-      }
-      
-      // Refresh user balance and challenge data
-      console.log('🔄 Refreshing user data after quick completion...');
-      await Promise.all([
-        refreshUser(),
-        refreshStats()
-      ]);
-      
-    } catch (error: any) {
-      console.error('❌ Quick completion failed:', error);
-      alert(`❌ Failed to complete challenge: ${error.message}\n\nPlease try again or use the detailed verification option.`);
-    }
-  };
+  // const handleQuickCompletion = async (challenge: any) => {};
 
   const handleVerifyChallenge = async (challengeOverride?: any) => {
     const today = getLocalDate();
@@ -731,7 +701,7 @@ Your payment may have been processed successfully on Razorpay's side. Please che
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-display font-bold text-morning-900 mb-2">
-            Good Morning, {user?.fullName?.split(' ')[0] || 'Champion'}! 🌅
+            Good Morning, {user?.fullName?.split(' ')[0] || 'Champion'}!
           </h1>
           <p className="text-morning-600">
             Ready to conquer another day? Let's make it count!
@@ -775,7 +745,7 @@ Your payment may have been processed successfully on Razorpay's side. Please che
                 <div>
                   <div className="flex items-center space-x-3 mb-3">
                     <div className="p-3 rounded-full bg-white bg-opacity-20 backdrop-blur-sm">
-                      <DollarSign className="w-8 h-8 text-white" />
+                      <IndianRupee className="w-8 h-8 text-white" />
                     </div>
                     <div>
                       <p className="text-cyan-100 text-sm font-medium uppercase tracking-wider">Wallet Balance</p>
@@ -783,7 +753,7 @@ Your payment may have been processed successfully on Razorpay's side. Please che
                     </div>
                   </div>
                   <div className="mb-4">
-                    <span className="text-5xl font-bold text-white drop-shadow-sm">₹{user?.balance || 0}</span>
+                        <span className="text-3xl sm:text-4xl md:text-5xl font-bold text-white drop-shadow-sm">{(user?.balance ?? 0).toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}</span>
                   </div>
                   <div className="flex space-x-4">
                     <button 
@@ -820,7 +790,22 @@ Your payment may have been processed successfully on Razorpay's side. Please che
             <div className="card">
             {(() => {
               const today = getLocalDate();
-              const fallbackTodayChallenge = todayChallenge || challenges.find(c => c.challengeDate === today);
+              // If todayChallenge is selected via context logic, use it; else derive from today's list
+              const todaysList = challenges.filter(c => c.challengeDate === today);
+              let derived: any | null = null;
+              if (!todayChallenge && todaysList.length > 0) {
+                const parseTime = (t: string) => { const [hh, mm] = t.split(':').map(Number); return hh * 60 + mm; };
+                const isWithinWindow = (c: any) => (c as any).isWithinGracePeriod || (c as any).canCheckIn;
+                const pending = todaysList.filter(c => c.status === 'PENDING');
+                const inWindow = pending.filter(isWithinWindow);
+                if (inWindow.length > 0) derived = inWindow.sort((a,b)=>parseTime(a.wakeUpTime)-parseTime(b.wakeUpTime))[0];
+                else if (pending.length > 0) derived = pending.sort((a,b)=>parseTime(a.wakeUpTime)-parseTime(b.wakeUpTime))[0];
+                else {
+                  const completed = todaysList.filter(c => c.status === 'COMPLETED' || c.status === 'PROCESSED');
+                  derived = completed.sort((a,b)=>parseTime(b.wakeUpTime)-parseTime(a.wakeUpTime))[0] || null;
+                }
+              }
+              const fallbackTodayChallenge = todayChallenge || derived || todaysList[0];
               
               // Calculate status for fallback challenge
               const getTodayStatus = (challenge: any) => {
@@ -934,16 +919,16 @@ Your payment may have been processed successfully on Razorpay's side. Please che
                         {timeWindowInfo.status === 'within' && (
                           <div className="text-center">
                             <div className="flex items-center justify-center space-x-3 mb-4">
-                              <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                      <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
                               <span className="text-sm font-bold text-emerald-800 uppercase tracking-wider bg-emerald-100 px-3 py-1 rounded-full">
                                 ✅ COMPLETION WINDOW OPEN
                               </span>
-                              <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                      <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
                             </div>
                             
                             {/* Large Ticking Timer */}
                             <div className="bg-gradient-to-br from-white to-green-50 border-2 border-green-300 rounded-2xl p-6 mb-3 shadow-lg">
-                              <div className="text-5xl font-bold font-sans text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-emerald-700 mb-2 tracking-tight">
+                              <div className="text-3xl sm:text-4xl md:text-5xl font-bold font-sans text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-emerald-700 mb-2 tracking-tight">
                                 {timeWindowInfo.humanReadableTime}
                               </div>
                               <div className="text-sm font-semibold text-green-700 uppercase tracking-wider">
@@ -1035,87 +1020,82 @@ Your payment may have been processed successfully on Razorpay's side. Please che
                       <div className="flex space-x-3">
                         {isInWindow ? (
                           <>
+                            {/* Primary action: Check In Now (moved here) */}
                             <button
-                              onClick={() => handleQuickCompletion(fallbackTodayChallenge)}
-                              className={`btn-primary flex-1 bg-green-600 hover:bg-green-700 focus:ring-green-500 text-lg font-bold py-4 ${
-                                timeWindowInfo.totalSeconds <= 60 ? 'animate-pulse bg-red-600 hover:bg-red-700' : ''
-                              }`}
+                              onClick={() => handleVerifyChallenge(fallbackTodayChallenge)}
                               disabled={loading}
+                              className="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 active:scale-95 transition-transform duration-150 ease-out text-white rounded-lg shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 flex-1 text-lg font-bold py-4"
                             >
-                              {loading ? 'Completing...' : timeWindowInfo.totalSeconds <= 60 ? '🚨 MARK COMPLETED NOW!' : '⚡ Mark Completed'}
+                              {verifying ? 'Verifying...' : 'Check In Now!'}
                             </button>
-                            {canCancel ? (
-                              <button
-                                onClick={() => handleCancelChallenge(fallbackTodayChallenge.id)}
-                                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-medium transition-colors focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-                                disabled={loading}
-                              >
-                                Cancel
-                              </button>
-                            ) : (
-                              <button
-                                className="bg-gray-300 text-gray-500 px-4 py-2 rounded-lg font-medium cursor-not-allowed"
-                                disabled={true}
-                                title="Cancellation locked on challenge day"
-                              >
-                                🔒 Locked
-                              </button>
-                            )}
+                            {/* Cancel button removed as requested; lock state handled below */}
                           </>
                         ) : (
                           <>
-                            {canCancel ? (
-                              <button
-                                onClick={() => handleCancelChallenge(fallbackTodayChallenge.id)}
-                                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-medium transition-colors focus:ring-2 focus:ring-red-500 focus:ring-offset-2 flex-1"
-                                disabled={loading}
-                              >
-                                Cancel Challenge
-                              </button>
-                            ) : (
-                              <button
-                                className="bg-gray-300 text-gray-500 px-4 py-2 rounded-lg font-medium cursor-not-allowed flex-1"
-                                disabled={true}
-                                title="Cancellation locked on challenge day"
-                              >
-                                🔒 Challenge Locked
-                              </button>
-                            )}
+                            {/* Cancel button removed for non-window state as well */}
                           </>
                         )}
                       </div>
 
-                      {/* Detailed verification (manual/photo) available during window */}
-                      {isInWindow && (
-                        <div className="mt-3 flex items-center flex-wrap gap-2">
+                      {/* Detailed verification / Locked area */}
+                      {isInWindow ? (
+                        <>
+                        <div className="mt-3 flex items-center gap-2 flex-nowrap overflow-x-auto w-full">
                           <button
                             onClick={() => setVerificationMethod('MANUAL')}
-                            className={`flex items-center space-x-2 px-3 py-2 rounded-lg border transition-colors ${
+                            className={`flex items-center space-x-2 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-lg border text-xs sm:text-sm shrink-0 transition-colors ${
                               verificationMethod === 'MANUAL' 
                                 ? 'bg-cyan-50 border-cyan-200 text-cyan-700' 
                                 : 'bg-white border-morning-200 text-morning-600'
                             }`}
                           >
                             <CheckCircle className="w-4 h-4" />
-                            <span>Manual</span>
+                            <span className="hidden sm:inline">Manual</span>
                           </button>
                           <button
                             onClick={() => setVerificationMethod('PHOTO')}
-                            className={`flex items-center space-x-2 px-3 py-2 rounded-lg border transition-colors ${
+                            className={`flex items-center space-x-2 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-lg border text-xs sm:text-sm shrink-0 transition-colors ${
                               verificationMethod === 'PHOTO' 
                                 ? 'bg-cyan-50 border-cyan-200 text-cyan-700' 
                                 : 'bg-white border-morning-200 text-morning-600'
                             }`}
                           >
                             <Camera className="w-4 h-4" />
-                            <span>Photo</span>
+                            <span className="hidden sm:inline">Photo</span>
                           </button>
+                          {!canCancel && (
+                            <span className="bg-gray-300 text-gray-600 px-3 py-2 rounded-lg text-xs sm:text-sm font-medium cursor-not-allowed whitespace-nowrap shrink-0">
+                              🔒 <span className="hidden sm:inline">Cancellation </span>Locked
+                            </span>
+                          )}
+                        </div>
+                        <div className="mt-2">
                           <button
-                            onClick={() => handleVerifyChallenge(fallbackTodayChallenge)}
-                            disabled={loading}
-                            className="btn-outline"
+                            type="button"
+                            onClick={() => setShowVerificationInfo((v: boolean) => !v)}
+                            onMouseEnter={() => setIsVerificationInfoHovered(true)}
+                            onMouseLeave={() => setIsVerificationInfoHovered(false)}
+                            className="text-xs text-morning-500 hover:text-morning-700 inline-flex items-center gap-1"
                           >
-                            {verifying ? 'Verifying...' : 'Check In Now!'}
+                            <Info className="w-3.5 h-3.5" />
+                            What do these options mean?
+                          </button>
+                          {(showVerificationInfo || isVerificationInfoHovered) && (
+                            <div className="mt-1 text-xs text-morning-600 bg-morning-50 border border-morning-200 rounded-md p-2">
+                              <div><span className="font-medium">Manual</span>: quick check-in without photo proof.</div>
+                              <div><span className="font-medium">Photo</span>: upload a photo as proof for verification(still in development).</div>
+                            </div>
+                          )}
+                        </div>
+                        </>
+                      ) : (
+                        <div className="mt-3 flex items-center flex-wrap gap-2">
+                          <button
+                            className="bg-gray-300 text-gray-500 rounded-lg font-medium cursor-not-allowed flex-1 text-lg py-4"
+                            disabled={true}
+                            title="Check-in locked outside the time window"
+                          >
+                            🔒 Locked
                           </button>
                         </div>
                       )}
@@ -1126,7 +1106,7 @@ Your payment may have been processed successfully on Razorpay's side. Please che
                 {fallbackTodayChallenge.status === 'COMPLETED' && fallbackTodayChallenge.isSuccessful && (
                   <div className="bg-success-50 border border-success-200 rounded-lg p-4">
                     <p className="text-success-700 font-medium">
-                      🎉 Congratulations! You completed your challenge! You will receive your winnings in your wallet within 12 hours.
+                      🎉 Congratulations! You completed your challenge! You will receive your winnings in your wallet by 3pm.
                     </p>
                   </div>
                 )}
@@ -1168,8 +1148,8 @@ Your payment may have been processed successfully on Razorpay's side. Please che
                 <div key={challenge.id} className="card">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
-                      <div className="p-2 rounded-lg bg-cyan-50">
-                        <Calendar className="w-5 h-5 text-cyan-600" />
+                      <div className="p-2 rounded-lg icon-chip">
+                        <Calendar className="w-5 h-5 text-white" />
                       </div>
                       <div>
                         <p className="font-medium text-morning-900">
@@ -1331,14 +1311,24 @@ Your payment may have been processed successfully on Razorpay's side. Please che
         <div>
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold text-morning-900">Challenge History</h2>
-            <Link to="/challenge" className="text-cyan-600 hover:text-cyan-700 text-sm font-medium">
-              View All
-            </Link>
+            <button
+              onClick={() => setShowAllHistory((v: boolean) => !v)}
+              className="text-cyan-600 hover:text-cyan-700 text-sm font-medium"
+            >
+              {showAllHistory ? 'Show Less' : 'View All'}
+            </button>
           </div>
           <div className="space-y-4">
             {challenges
               .filter(challenge => challenge.status === 'COMPLETED' || challenge.status === 'PROCESSED')
-              .slice(0, 5)
+              .sort((a, b) => {
+                const toDate = (c: any) => {
+                  const time = (c.wakeUpTime && c.wakeUpTime.length === 5) ? `${c.wakeUpTime}:00` : c.wakeUpTime;
+                  return new Date(`${c.challengeDate}T${time}`);
+                };
+                return toDate(b).getTime() - toDate(a).getTime(); // DESC by wake time (and date)
+              })
+              .slice(0, showAllHistory ? 50 : 5)
               .map((challenge) => (
               <div key={challenge.id} className="card">
                 <div className="flex items-center justify-between">
@@ -1369,7 +1359,7 @@ Your payment may have been processed successfully on Razorpay's side. Please che
                       challenge.isSuccessful ? 'text-success-600' : 
                       challenge.status === 'PENDING' ? 'text-warning-600' : 'text-error-600'
                     }`}>
-                      {challenge.status}
+                      {challenge.isSuccessful ? 'COMPLETED' : challenge.status === 'PENDING' ? 'PENDING' : 'FAILED'}
                     </p>
                     {challenge.isSuccessful && challenge.winningsAmount && (
                       <p className="text-xs text-success-600">+₹{challenge.winningsAmount}</p>

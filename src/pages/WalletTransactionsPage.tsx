@@ -49,18 +49,21 @@ const WalletTransactionsPage = () => {
       </div>
 
       {/* Current Balance */}
-      <div className="card mb-6 bg-gradient-to-r from-cyan-50 to-morning-50">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm text-morning-600 mb-1">Current Balance</p>
-            <p className="text-2xl font-bold text-morning-900">₹{(user?.balance ?? 0).toLocaleString()}</p>
+      <div className="mb-6">
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-cyan-600 to-blue-600 p-5 sm:p-6 text-white shadow-lg">
+          <div className="absolute inset-0 bg-black/10" />
+          <div className="relative z-10 flex items-center justify-between">
+            <div>
+              <p className="text-xs sm:text-sm text-white/80 mb-1 uppercase tracking-wider">Current Balance</p>
+              <p className="text-2xl sm:text-3xl font-bold">{(user?.balance ?? 0).toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}</p>
+            </div>
+            <button
+              onClick={async () => { try { await refreshUser(); } catch {} }}
+              className="px-3 py-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-lg text-white text-sm font-medium transition-all duration-200 border border-white/30"
+            >
+              Refresh
+            </button>
           </div>
-          <button
-            onClick={async () => { try { await refreshUser(); } catch {} }}
-            className="btn-outline text-sm"
-          >
-            Refresh
-          </button>
         </div>
       </div>
 

@@ -9,7 +9,7 @@ import DashboardPage from './pages/DashboardPage.tsx';
 import ChallengePage from './pages/ChallengePage.tsx';
 import ProfilePage from './pages/ProfilePage.tsx';
 import SettingsPage from './pages/SettingsPage.tsx';
-import AchievementsPage from './pages/AchievementsPage.tsx';
+// import AchievementsPage from './pages/AchievementsPage.tsx';
 import OnboardingPage from './pages/OnboardingPage.tsx';
 import EmailVerificationPage from './pages/EmailVerificationPage.tsx';
 import ForgotPasswordPage from './pages/ForgotPasswordPage.tsx';
@@ -26,6 +26,7 @@ function App() {
         <Router>
           <div className="min-h-screen bg-morning-50 dark:bg-morning-900 dark:text-morning-50">
             <Navbar />
+            <div className="mx-auto w-full max-w-5xl px-3 sm:px-4 md:px-6 lg:px-8">
             <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
@@ -106,7 +107,8 @@ function App() {
                 </ProtectedRoute>
               } 
             />
-            <Route 
+            {/* Achievements route temporarily disabled */}
+            {/* <Route 
               path="/achievements" 
               element={
                 <ProtectedRoute>
@@ -115,8 +117,9 @@ function App() {
                   </ProfileGuard>
                 </ProtectedRoute>
               } 
-            />
+            /> */}
           </Routes>
+            </div>
         </div>
       </Router>
       </ChallengeProvider>

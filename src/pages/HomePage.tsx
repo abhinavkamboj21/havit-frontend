@@ -8,28 +8,28 @@ const HomePage = () => {
   const features = [
     {
       icon: <Clock className="w-6 h-6" />,
-      title: 'Daily Wake-Up Challenges',
-      description: 'Set your wake-up time and forfeit amount. Win money from others who oversleep!'
+      title: 'Get Paid to Wake Up',
+      description: 'Earn real rewards when you wake up on time. Oversleep? Your stake covers the pool.'
     },
     {
       icon: <TrendingUp className="w-6 h-6" />,
-      title: 'Build Consistent Habits',
-      description: 'Track your streaks and watch your discipline grow with our gamified approach.'
+      title: 'Real-Money Accountability',
+      description: 'Put meaningful stakes behind your goal. The right incentive turns intention into action.'
     },
     {
       icon: <Users className="w-6 h-6" />,
-      title: 'Peer-to-Peer Motivation',
-      description: 'Connect with friends and compete on leaderboards for extra motivation.'
+      title: 'Community & Streaks',
+      description: 'Stay consistent with streaks and a supportive community on the same journey.'
     }
   ];
 
   const benefits = [
-    'Wake up early consistently',
-    'Earn money from others\' failures',
-    'Build lasting morning habits',
-    'Join a community of early risers',
-    'Track your progress with analytics',
-    'Withdraw your earnings anytime'
+    'Earn when you wake up on time',
+    'Lose a small stake if you don\'t – powerful motivation',
+    'Lock in a simple wake-up window (no endless snoozing)',
+    'Join a community that keeps you accountable',
+    'Track streaks and improvement over time',
+    'Cash out to your wallet when you win'
   ];
 
   return (
@@ -38,30 +38,30 @@ const HomePage = () => {
       <section className="py-20 text-center">
         <div className="max-w-4xl mx-auto px-4">
           <div className="mb-8">
-            <div className="w-20 h-20 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+            <div className="w-20 h-20 icon-chip rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
               <Sun className="w-10 h-10 text-white" />
             </div>
             <h1 className="text-5xl md:text-6xl font-display font-bold text-morning-900 mb-6 leading-tight">
-              Transform Your
-              <span className="text-gradient block leading-tight">Morning Routine</span>
+              Get paid to
+              <span className="text-gradient block leading-tight">wake up on time</span>
             </h1>
             <p className="text-xl text-morning-600 mb-8 max-w-2xl mx-auto">
-              Hav-it uses peer-to-peer financial incentives to help you wake up early consistently. 
-              Set daily challenges, earn from others' failures, and build lasting morning habits.
+              Put money on the line, wake up on time, and get rewarded. Miss your wake-up? Your stake fuels the prize pool. 
+              Simple, fair, and designed to end snoozing for good.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               {!isAuthenticated ? (
                 <>
-                  <Link to="/register" className="bg-cyan-500 hover:bg-cyan-600 text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg text-lg px-8 py-4 inline-flex items-center">
-                    Start Your Journey
+                  <Link to="/register" className="btn-primary inline-flex items-center">
+                    Start Waking & Earning
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </Link>
-                  <Link to="/login" className="border-2 border-cyan-500 text-cyan-500 hover:bg-cyan-500 hover:text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 text-lg px-8 py-4 inline-flex items-center">
+                  <Link to="/login" className="btn-outline inline-flex items-center">
                     Sign In
                   </Link>
                 </>
               ) : (
-                <Link to="/dashboard" className="bg-cyan-500 hover:bg-cyan-600 text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg text-lg px-8 py-4 inline-flex items-center">
+                <Link to="/dashboard" className="btn-primary inline-flex items-center">
                   Go to Dashboard
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Link>
@@ -76,18 +76,17 @@ const HomePage = () => {
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-display font-bold text-morning-900 mb-4">
-              How It Works
+              How it works
             </h2>
             <p className="text-xl text-morning-600 max-w-2xl mx-auto">
-              Our unique approach combines behavioral psychology with financial incentives 
-              to create powerful motivation for consistent wake-up habits.
+              Set a wake-up time, choose your stake, and keep your streak alive. Wake up on time to earn – oversleep and you fund the winners.
             </p>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">
             {features.map((feature, index) => (
               <div key={index} className="bg-white rounded-xl shadow-md border border-morning-100 p-6 text-center hover:shadow-lg transition-all duration-300">
-                <div className="w-12 h-12 bg-cyan-100 rounded-xl flex items-center justify-center mx-auto mb-4 text-cyan-600">
+                <div className="w-12 h-12 icon-chip rounded-xl flex items-center justify-center mx-auto mb-4">
                   {feature.icon}
                 </div>
                 <h3 className="text-xl font-semibold text-morning-900 mb-3">
@@ -107,10 +106,10 @@ const HomePage = () => {
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-display font-bold text-morning-900 mb-4">
-              Why Choose Hav-it?
+              Why people love Havit
             </h2>
             <p className="text-xl text-morning-600">
-              Join thousands of students and professionals who have transformed their mornings
+              Clear incentives. No gimmicks. Just consistent mornings and real rewards for showing up.
             </p>
           </div>
           
@@ -139,18 +138,18 @@ const HomePage = () => {
       <section className="py-20 bg-white">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-4xl font-display font-bold text-morning-900 mb-6">
-            Ready to Transform Your Mornings?
+            Put your money where your morning is
           </h2>
           <p className="text-xl text-morning-600 mb-8">
-            Join the community of early risers and start earning while building better habits.
+            Pick a wake-up time. Set a stake. Get paid when you follow through.
           </p>
           {!isAuthenticated ? (
-            <Link to="/register" className="bg-cyan-500 hover:bg-cyan-600 text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg text-lg px-8 py-4 inline-flex items-center">
-              Get Started Today
+            <Link to="/register" className="btn-primary inline-flex items-center">
+              Start Now
               <ArrowRight className="w-5 h-5 ml-2" />
             </Link>
           ) : (
-            <Link to="/challenge" className="bg-cyan-500 hover:bg-cyan-600 text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg text-lg px-8 py-4 inline-flex items-center">
+            <Link to="/challenge" className="btn-primary inline-flex items-center">
               Set Your Next Challenge
               <ArrowRight className="w-5 h-5 ml-2" />
             </Link>

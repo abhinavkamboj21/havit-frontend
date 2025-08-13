@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { walletAPI } from '../utils/api';
 import { 
   ArrowLeft, 
-  DollarSign, 
+  IndianRupee, 
   Smartphone, 
   Building, 
   CheckCircle, 
@@ -168,8 +168,8 @@ const WithdrawalPage = () => {
   const renderAmountStep = () => (
     <div className="space-y-6">
       <div className="text-center">
-        <div className="w-16 h-16 bg-cyan-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <DollarSign className="w-8 h-8 text-cyan-600" />
+        <div className="w-16 h-16 icon-chip rounded-full flex items-center justify-center mx-auto mb-4">
+          <IndianRupee className="w-8 h-8 text-white" />
         </div>
         <h2 className="text-2xl font-bold text-morning-900 mb-2">Withdraw Funds</h2>
         <p className="text-morning-600">Enter the amount you want to withdraw</p>

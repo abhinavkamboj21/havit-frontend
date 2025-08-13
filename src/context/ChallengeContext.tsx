@@ -151,11 +151,31 @@ export const ChallengeProvider: React.FC<ChallengeProviderProps> = ({ children }
       
       const response = await challengeAPI.getChallengeByDate(today);
       console.log('✅ Today\'s challenge response:', response);
-      
-      if (response.challenge) {
-        setTodayChallenge(response.challenge);
-      } else {
+      const list = response.challenges || (response.challenge ? [response.challenge] : []);
+      if (!list || list.length === 0) {
         setTodayChallenge(null);
+      } else {
+        // Derive active challenge per priority
+        const parseTime = (t: string) => {
+          const [hh, mm] = t.split(':').map(Number);
+          return hh * 60 + mm;
+        };
+        const isWithinWindow = (c: any) => c.isWithinGracePeriod || c.canCheckIn;
+
+        const pending = list.filter((c: any) => c.status === 'PENDING');
+        const inWindow = pending.filter(isWithinWindow);
+        let selected: any | null = null;
+        if (inWindow.length > 0) {
+          selected = inWindow.sort((a: any, b: any) => parseTime(a.wakeUpTime) - parseTime(b.wakeUpTime))[0];
+        } else if (pending.length > 0) {
+          // next upcoming pending today
+          selected = pending.sort((a: any, b: any) => parseTime(a.wakeUpTime) - parseTime(b.wakeUpTime))[0];
+        } else {
+          // most recent completed today (by wake time desc)
+          const completed = list.filter((c: any) => c.status === 'COMPLETED' || c.status === 'PROCESSED');
+          selected = completed.sort((a: any, b: any) => parseTime(b.wakeUpTime) - parseTime(a.wakeUpTime))[0] || null;
+        }
+        setTodayChallenge(selected);
       }
     } catch (err: any) {
       console.error('❌ Failed to fetch today\'s challenge:', err);
@@ -174,8 +194,8 @@ export const ChallengeProvider: React.FC<ChallengeProviderProps> = ({ children }
       console.log('📅 Fetching challenge for date:', date);
       const response = await challengeAPI.getChallengeByDate(date);
       console.log('✅ Challenge by date response:', response);
-      
-      return response.challenge || null;
+      const list = response.challenges || (response.challenge ? [response.challenge] : []);
+      return list && list.length > 0 ? list[0] : null;
     } catch (err: any) {
       console.error('❌ Failed to fetch challenge by date:', err);
       setError(err.message || 'Failed to load challenge');

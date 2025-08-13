@@ -119,10 +119,10 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-lg flex items-center justify-center">
-              <Sun className="w-5 h-5 text-white" />
+            <div className="w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-br from-cyan-600 to-blue-600 rounded-lg flex items-center justify-center">
+              <Sun className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </div>
-            <span className="text-xl font-display font-bold text-gradient">
+            <span className="text-2xl sm:text-3xl font-display font-extrabold text-gradient leading-none">
               Havit
             </span>
           </Link>
@@ -133,8 +133,10 @@ const Navbar = () => {
               <>
                 <Link
                   to="/dashboard"
-                  className={`text-morning-700 hover:text-cyan-600 transition-colors ${
-                    location.pathname === '/dashboard' ? 'text-cyan-600 font-medium' : ''
+                  className={`transition-colors px-2 py-1 rounded-md ${
+                    location.pathname === '/dashboard'
+                      ? 'bg-cyan-100 text-cyan-800 font-semibold shadow-sm dark:bg-morning-700 dark:text-cyan-300'
+                      : 'text-morning-700 hover:text-cyan-600'
                   }`}
                 >
                   Dashboard
@@ -142,27 +144,31 @@ const Navbar = () => {
                 {/* Wallet Transactions link styled like Dashboard */}
                 <Link
                   to="/wallet/transactions"
-                  className={`text-morning-700 hover:text-cyan-600 transition-colors ${
-                    location.pathname === '/wallet/transactions' ? 'text-cyan-600 font-medium' : ''
+                  className={`transition-colors px-2 py-1 rounded-md ${
+                    location.pathname === '/wallet/transactions'
+                      ? 'bg-cyan-100 text-cyan-800 font-semibold shadow-sm dark:bg-morning-700 dark:text-cyan-300'
+                      : 'text-morning-700 hover:text-cyan-600'
                   }`}
                 >
                   Transactions
                 </Link>
                 
-                {/* Achievements link */}
-                <Link
+                {/* Achievements link (temporarily hidden) */}
+                {/* <Link
                   to="/achievements"
-                  className={`text-morning-700 hover:text-cyan-600 transition-colors ${
-                    location.pathname === '/achievements' ? 'text-cyan-600 font-medium' : ''
+                  className={`transition-colors px-2 py-1 rounded-md ${
+                    location.pathname === '/achievements'
+                      ? 'bg-cyan-100 text-cyan-800 font-semibold shadow-sm dark:bg-morning-700 dark:text-cyan-300'
+                      : 'text-morning-700 hover:text-cyan-600'
                   }`}
                 >
                   Achievements
-                </Link>
+                </Link> */}
                 
                 {/* Create Challenge Button */}
                 <button
                   onClick={() => setShowCreateChallenge(true)}
-                  className="btn-primary flex items-center space-x-2"
+                  className="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 active:scale-95 transition-transform duration-150 ease-out text-white px-3.5 py-2.5 rounded-lg text-sm font-medium flex items-center space-x-2 shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-morning-800"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Create Challenge</span>
@@ -260,11 +266,21 @@ const Navbar = () => {
             )}
           </div>
 
-          {/* Mobile menu button */}
-          <div className="md:hidden">
+          {/* Mobile actions: Create Challenge + Menu toggle */}
+          <div className="md:hidden flex items-center space-x-2">
+            {isAuthenticated && (
+              <button
+                onClick={() => setShowCreateChallenge(true)}
+                className="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 active:scale-95 transition-transform duration-150 ease-out text-white px-3.5 py-2.5 rounded-lg text-sm font-medium flex items-center space-x-2 shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-morning-800"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Create</span>
+              </button>
+            )}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="text-morning-700 hover:text-cyan-600 transition-colors"
+              className="text-morning-700 hover:text-cyan-600 transition-colors p-2 rounded-md"
+              aria-label="Toggle menu"
             >
               {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -278,38 +294,42 @@ const Navbar = () => {
               <div className="space-y-4">
                 <Link
                   to="/dashboard"
-                  className="block text-morning-700 hover:text-cyan-600 transition-colors"
+                  className={`block transition-colors px-3 py-2 rounded-md ${
+                    location.pathname === '/dashboard'
+                      ? 'bg-cyan-100 text-cyan-800 font-semibold shadow-sm dark:bg-morning-700 dark:text-cyan-300'
+                      : 'text-morning-700 hover:text-cyan-600'
+                  }`}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Dashboard
                 </Link>
                 <Link
                   to="/wallet/transactions"
-                  className="block text-morning-700 hover:text-cyan-600 transition-colors"
+                  className={`block transition-colors px-3 py-2 rounded-md ${
+                    location.pathname === '/wallet/transactions'
+                      ? 'bg-cyan-100 text-cyan-800 font-semibold shadow-sm dark:bg-morning-700 dark:text-cyan-300'
+                      : 'text-morning-700 hover:text-cyan-600'
+                  }`}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Transactions
                 </Link>
-                <Link
+                {/* Achievements (temporarily hidden on mobile) */}
+                {/* <Link
                   to="/achievements"
                   className="block text-morning-700 hover:text-cyan-600 transition-colors"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Achievements
-                </Link>
-                <button
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    setShowCreateChallenge(true);
-                  }}
-                  className="btn-primary w-full flex items-center justify-center space-x-2"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>Create Challenge</span>
-                </button>
+                </Link> */}
+                {/* Create button moved to top bar on mobile */}
                 <Link
                   to="/profile"
-                  className="flex items-center space-x-2 text-morning-700 hover:text-cyan-600 transition-colors"
+                  className={`flex items-center space-x-2 transition-colors px-3 py-2 rounded-md ${
+                    location.pathname === '/profile'
+                      ? 'bg-cyan-100 text-cyan-800 font-semibold shadow-sm dark:bg-morning-700 dark:text-cyan-300'
+                      : 'text-morning-700 hover:text-cyan-600'
+                  }`}
                   onClick={async () => {
                     setIsMobileMenuOpen(false);
                     // Refresh user profile data when profile link is clicked
@@ -327,7 +347,11 @@ const Navbar = () => {
                 </Link>
                 <Link
                   to="/settings"
-                  className="flex items-center space-x-2 text-morning-700 hover:text-cyan-600 transition-colors"
+                  className={`flex items-center space-x-2 transition-colors px-3 py-2 rounded-md ${
+                    location.pathname === '/settings'
+                      ? 'bg-cyan-100 text-cyan-800 font-semibold shadow-sm dark:bg-morning-700 dark:text-cyan-300'
+                      : 'text-morning-700 hover:text-cyan-600'
+                  }`}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <Settings className="w-4 h-4" />
@@ -423,22 +447,50 @@ const Navbar = () => {
                 <label className="block text-sm font-medium text-morning-700 mb-2">
                   Wake-up Time
                 </label>
-                <select
-                  value={challengeForm.wakeUpTime}
-                  onChange={(e) => setChallengeForm(prev => ({ ...prev, wakeUpTime: e.target.value }))}
-                  className="input-field"
-                  required
-                >
-                  <option value="">Select wake-up time</option>
-                  <option value="04:00">4:00 AM</option>
-                  <option value="04:30">4:30 AM</option>
-                  <option value="05:00">5:00 AM</option>
-                  <option value="05:30">5:30 AM</option>
-                  <option value="06:00">6:00 AM</option>
-                  <option value="06:30">6:30 AM</option>
-                  <option value="07:00">7:00 AM</option>
-                </select>
-                <p className="text-xs text-morning-500 mt-1">30-minute time slots between 4:00 AM and 7:00 AM</p>
+                {(() => {
+                  const slots = [
+                    '04:00', '04:30', '05:00', '05:30', '06:00', '06:30', '07:00',
+                  ];
+                  const valueIndex = Math.max(0, slots.indexOf(challengeForm.wakeUpTime));
+                  return (
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm text-morning-600">4:00 AM</span>
+                        <span className="text-sm font-semibold text-morning-900">
+                          {(() => {
+                            const [h, m] = challengeForm.wakeUpTime.split(':');
+                            const hour = Number(h);
+                            const displayHour = hour > 12 ? hour - 12 : hour;
+                            const ampm = hour >= 12 ? 'PM' : 'AM';
+                            return `${displayHour}:${m} ${ampm}`;
+                          })()}
+                        </span>
+                        <span className="text-sm text-morning-600">7:00 AM</span>
+                      </div>
+                      <input
+                        type="range"
+                        min={0}
+                        max={slots.length - 1}
+                        step={1}
+                        value={valueIndex}
+                        onChange={(e) => {
+                          const idx = Number(e.target.value);
+                          const selected = slots[idx] || '05:00';
+                          setChallengeForm(prev => ({ ...prev, wakeUpTime: selected }));
+                        }}
+                        className="w-full slider-fancy bg-gradient-to-r from-cyan-600 to-blue-600 appearance-none cursor-pointer"
+                      />
+                      <div className="flex justify-between mt-2 text-xs text-morning-500">
+                        {slots.map((t, i) => (
+                          <span key={t} className={`${i % 2 === 0 ? 'block' : 'hidden sm:block'}`}>
+                            {t}
+                          </span>
+                        ))}
+                      </div>
+                      <p className="text-xs text-morning-500 mt-2">Slide to choose in 30-minute steps (4:00–7:00 AM)</p>
+                    </div>
+                  );
+                })()}
               </div>
 
               <div>
