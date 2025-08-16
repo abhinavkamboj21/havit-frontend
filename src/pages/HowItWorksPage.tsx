@@ -4,15 +4,12 @@ import {
   Wallet, 
   Trophy, 
   Target, 
-  Camera, 
   CheckCircle, 
   AlertCircle, 
   TrendingUp,
-  Calendar,
   Settings,
   HelpCircle,
   ArrowRight,
-  IndianRupee,
   Plus,
   User
 } from 'lucide-react';
