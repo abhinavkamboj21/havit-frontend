@@ -15,7 +15,6 @@ const RegisterPage = () => {
     city: '',
     occupation: '',
     institutionName: '',
-    preferredWakeUpTime: '07:00',
     sleepChallenges: ['Hitting snooze', 'Late night scrolling']
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -112,7 +111,6 @@ const RegisterPage = () => {
         email: formData.email,
         password: formData.password,
         fullName: formData.fullName,
-        preferredWakeUpTime: formData.preferredWakeUpTime,
         sleepChallenges: formData.sleepChallenges
       };
 

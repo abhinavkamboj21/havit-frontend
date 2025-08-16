@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { smsAPI } from '../utils/api';
-import { User, Phone, Calendar, MapPin, Briefcase, Building, Clock, MessageSquare, CheckCircle, RotateCcw } from 'lucide-react';
+import { User, Phone, Calendar, MapPin, Briefcase, Building, MessageSquare, CheckCircle, RotateCcw } from 'lucide-react';
 
 const OnboardingPage = () => {
   const [formData, setFormData] = useState({
@@ -12,8 +12,7 @@ const OnboardingPage = () => {
     gender: '',
     city: '',
     occupation: '',
-    institutionName: '',
-    preferredWakeUpTime: '07:00'
+    institutionName: ''
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -42,8 +41,7 @@ const OnboardingPage = () => {
         gender: '',
         city: '',
         occupation: '',
-        institutionName: '',
-        preferredWakeUpTime: '07:00'
+        institutionName: ''
       });
     }
   });
@@ -496,22 +494,7 @@ const OnboardingPage = () => {
         </div>
       </div>
 
-      <div>
-        <label htmlFor="preferredWakeUpTime" className="block text-sm font-medium text-morning-700 mb-2">
-          Preferred Wake-up Time
-        </label>
-        <div className="relative">
-          <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-morning-400" />
-          <input
-            id="preferredWakeUpTime"
-            name="preferredWakeUpTime"
-            type="time"
-            value={formData.preferredWakeUpTime}
-            onChange={handleChange}
-            className="input-field pl-10"
-          />
-        </div>
-      </div>
+
     </div>
   );
 

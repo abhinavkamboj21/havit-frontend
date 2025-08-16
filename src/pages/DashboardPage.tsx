@@ -1099,7 +1099,7 @@ Your payment may have been processed successfully on Razorpay's side. Please che
                 {fallbackTodayChallenge.status === 'COMPLETED' && fallbackTodayChallenge.isSuccessful && (
                   <div className="bg-success-50 border border-success-200 rounded-lg p-4">
                       <p className="text-success-700 font-medium">
-                        🎉 Congratulations! You completed your challenge! You will receive your winnings in your wallet by 3 PM.
+                        🎉 Congratulations! You completed your challenge! You will receive your winnings in your wallet by 2 PM.
                       </p>
                   </div>
                 )}

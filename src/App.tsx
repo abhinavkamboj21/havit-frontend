@@ -11,6 +11,7 @@ import ProfilePage from './pages/ProfilePage.tsx';
 import SettingsPage from './pages/SettingsPage.tsx';
 // import AchievementsPage from './pages/AchievementsPage.tsx';
 import OnboardingPage from './pages/OnboardingPage.tsx';
+import HowItWorksPage from './pages/HowItWorksPage.tsx';
 import EmailVerificationPage from './pages/EmailVerificationPage.tsx';
 import ForgotPasswordPage from './pages/ForgotPasswordPage.tsx';
 import ResetPasswordPage from './pages/ResetPasswordPage.tsx';
@@ -24,11 +25,12 @@ function App() {
     <AuthProvider>
       <ChallengeProvider>
         <Router>
-          <div className="min-h-screen bg-morning-50 dark:bg-morning-900 dark:text-morning-50">
+          <div className="min-h-screen bg-morning-50">
             <Navbar />
             <div className="mx-auto w-full max-w-5xl px-3 sm:px-4 md:px-6 lg:px-8">
             <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/how-it-works" element={<HowItWorksPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             

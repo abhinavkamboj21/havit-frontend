@@ -78,9 +78,13 @@ const HomePage = () => {
             <h2 className="text-4xl font-display font-bold text-morning-900 mb-4">
               How it works
             </h2>
-            <p className="text-xl text-morning-600 max-w-2xl mx-auto">
+            <p className="text-xl text-morning-600 max-w-2xl mx-auto mb-6">
               Set a wake-up time, choose your stake, and keep your streak alive. Wake up on time to earn – oversleep and you fund the winners.
             </p>
+            <Link to="/how-it-works" className="btn-outline inline-flex items-center">
+              Learn More
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </Link>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">

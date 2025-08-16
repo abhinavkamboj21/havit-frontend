@@ -114,7 +114,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white dark:bg-morning-800 shadow-soft border-b border-morning-100 dark:border-morning-700">
+    <nav className="bg-white shadow-soft border-b border-morning-100">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -129,13 +129,25 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
+            {/* Public Help Link */}
+            <Link
+              to="/how-it-works"
+              className={`transition-colors px-2 py-1 rounded-md ${
+                location.pathname === '/how-it-works'
+                  ? 'bg-cyan-100 text-cyan-800 font-semibold shadow-sm'
+                  : 'text-morning-700 hover:text-cyan-600'
+              }`}
+            >
+              How It Works
+            </Link>
+            
             {isAuthenticated ? (
               <>
                 <Link
                   to="/dashboard"
                   className={`transition-colors px-2 py-1 rounded-md ${
                     location.pathname === '/dashboard'
-                      ? 'bg-cyan-100 text-cyan-800 font-semibold shadow-sm dark:bg-morning-700 dark:text-cyan-300'
+                      ? 'bg-cyan-100 text-cyan-800 font-semibold shadow-sm'
                       : 'text-morning-700 hover:text-cyan-600'
                   }`}
                 >
@@ -146,7 +158,7 @@ const Navbar = () => {
                   to="/wallet/transactions"
                   className={`transition-colors px-2 py-1 rounded-md ${
                     location.pathname === '/wallet/transactions'
-                      ? 'bg-cyan-100 text-cyan-800 font-semibold shadow-sm dark:bg-morning-700 dark:text-cyan-300'
+                      ? 'bg-cyan-100 text-cyan-800 font-semibold shadow-sm'
                       : 'text-morning-700 hover:text-cyan-600'
                   }`}
                 >
@@ -168,7 +180,7 @@ const Navbar = () => {
                 {/* Create Challenge Button */}
                 <button
                   onClick={() => setShowCreateChallenge(true)}
-                  className="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 active:scale-95 transition-transform duration-150 ease-out text-white px-3.5 py-2.5 rounded-lg text-sm font-medium flex items-center space-x-2 shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-morning-800"
+                  className="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 active:scale-95 transition-transform duration-150 ease-out text-white px-3.5 py-2.5 rounded-lg text-sm font-medium flex items-center space-x-2 shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Create Challenge</span>
@@ -290,13 +302,26 @@ const Navbar = () => {
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-morning-100">
+            {/* Public Help Link - Always visible */}
+            <Link
+              to="/how-it-works"
+              className={`block transition-colors px-3 py-2 rounded-md ${
+                location.pathname === '/how-it-works'
+                  ? 'bg-cyan-100 text-cyan-800 font-semibold shadow-sm'
+                  : 'text-morning-700 hover:text-cyan-600'
+              }`}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              How It Works
+            </Link>
+            
             {isAuthenticated ? (
               <div className="space-y-4">
                 <Link
                   to="/dashboard"
                   className={`block transition-colors px-3 py-2 rounded-md ${
                     location.pathname === '/dashboard'
-                      ? 'bg-cyan-100 text-cyan-800 font-semibold shadow-sm dark:bg-morning-700 dark:text-cyan-300'
+                      ? 'bg-cyan-100 text-cyan-800 font-semibold shadow-sm'
                       : 'text-morning-700 hover:text-cyan-600'
                   }`}
                   onClick={() => setIsMobileMenuOpen(false)}
@@ -307,7 +332,7 @@ const Navbar = () => {
                   to="/wallet/transactions"
                   className={`block transition-colors px-3 py-2 rounded-md ${
                     location.pathname === '/wallet/transactions'
-                      ? 'bg-cyan-100 text-cyan-800 font-semibold shadow-sm dark:bg-morning-700 dark:text-cyan-300'
+                      ? 'bg-cyan-100 text-cyan-800 font-semibold shadow-sm'
                       : 'text-morning-700 hover:text-cyan-600'
                   }`}
                   onClick={() => setIsMobileMenuOpen(false)}
@@ -327,7 +352,7 @@ const Navbar = () => {
                   to="/profile"
                   className={`flex items-center space-x-2 transition-colors px-3 py-2 rounded-md ${
                     location.pathname === '/profile'
-                      ? 'bg-cyan-100 text-cyan-800 font-semibold shadow-sm dark:bg-morning-700 dark:text-cyan-300'
+                      ? 'bg-cyan-100 text-cyan-800 font-semibold shadow-sm'
                       : 'text-morning-700 hover:text-cyan-600'
                   }`}
                   onClick={async () => {
@@ -349,7 +374,7 @@ const Navbar = () => {
                   to="/settings"
                   className={`flex items-center space-x-2 transition-colors px-3 py-2 rounded-md ${
                     location.pathname === '/settings'
-                      ? 'bg-cyan-100 text-cyan-800 font-semibold shadow-sm dark:bg-morning-700 dark:text-cyan-300'
+                      ? 'bg-cyan-100 text-cyan-800 font-semibold shadow-sm'
                       : 'text-morning-700 hover:text-cyan-600'
                   }`}
                   onClick={() => setIsMobileMenuOpen(false)}

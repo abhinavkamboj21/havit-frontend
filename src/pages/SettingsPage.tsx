@@ -1,26 +1,6 @@
-import { useEffect, useState } from 'react';
-import { Moon, Sun, Bell, Shield, Trash2, KeyRound } from 'lucide-react';
+import { Bell, Shield, Trash2, KeyRound } from 'lucide-react';
 
 const SettingsPage = () => {
-  const [isDark, setIsDark] = useState<boolean>(false);
-
-  useEffect(() => {
-    const stored = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const initialDark = stored ? stored === 'dark' : prefersDark;
-    setIsDark(initialDark);
-  }, []);
-
-  useEffect(() => {
-    const root = document.documentElement;
-    if (isDark) {
-      root.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      root.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-  }, [isDark]);
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -29,23 +9,7 @@ const SettingsPage = () => {
         <p className="text-morning-600">Manage your account, preferences, and appearance</p>
       </div>
 
-      {/* Appearance */}
-      <div className="card mb-6">
-        <h3 className="text-xl font-semibold text-morning-900 mb-6">Appearance</h3>
-        <div className="flex items-center justify-between p-4 bg-morning-50 rounded-lg">
-          <div>
-            <h4 className="font-medium text-morning-900">Dark Theme</h4>
-            <p className="text-sm text-morning-600">Toggle between light and dark mode</p>
-          </div>
-          <button
-            onClick={() => setIsDark((v) => !v)}
-            className="btn-outline flex items-center space-x-2"
-          >
-            {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-            <span>{isDark ? 'Light Mode' : 'Dark Mode'}</span>
-          </button>
-        </div>
-      </div>
+
 
       {/* Account Settings moved from Profile */}
       <div className="card">

@@ -15,10 +15,7 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Dark mode base */
-  .dark body {
-    @apply bg-morning-900 text-morning-50;
-  }
+
 
   /* Ensure proper text rendering for display fonts */
   .font-display {
@@ -46,17 +43,13 @@
     @apply bg-white rounded-xl shadow-md border border-morning-100 p-6;
   }
 
-  .dark .card {
-    @apply bg-morning-800 border-morning-700;
-  }
+
   
   .input-field {
     @apply w-full px-4 py-3 border border-morning-200 rounded-lg focus:ring-2 focus:ring-cyan-600 focus:border-cyan-600 transition-all duration-200 bg-white;
   }
 
-  .dark .input-field {
-    @apply bg-morning-700 border-morning-600 text-morning-50 placeholder-morning-400;
-  }
+
   
   .gradient-bg {
     @apply bg-gradient-to-br from-cyan-50 to-morning-50;
