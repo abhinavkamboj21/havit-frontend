@@ -21,6 +21,7 @@ const RegisterPage = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [authMethod, setAuthMethod] = useState<'email' | 'google'>('email');
   
   const { register, googleLogin } = useAuth();
@@ -98,6 +99,7 @@ const RegisterPage = () => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
+    setFieldErrors({});
 
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
@@ -145,7 +147,15 @@ const RegisterPage = () => {
       } else {
         const errorMsg = err.message || 'Registration failed. Please try again.';
         setError(errorMsg);
-        alert(`❌ Registration Failed!\n\n${errorMsg}\n\nPlease check the console for more details.`);
+        if (err.code === 'VALIDATION_ERROR' && Array.isArray(err.fieldErrors)) {
+          const map: Record<string, string> = {};
+          err.fieldErrors.forEach((fe: any) => {
+            if (fe?.field && fe?.message) map[fe.field] = fe.message;
+          });
+          setFieldErrors(map);
+        } else {
+          alert(`❌ Registration Failed!\n\n${errorMsg}\n\nPlease check the console for more details.`);
+        }
       }
       
       // Don't navigate anywhere on error - stay on registration page
@@ -222,10 +232,13 @@ const RegisterPage = () => {
                   name="fullName"
                   value={formData.fullName}
                   onChange={handleChange}
-                  className="input-field"
+                  className={`input-field ${fieldErrors.fullName ? 'border-error-300 focus:ring-error-600' : ''}`}
                   placeholder="Enter your full name"
                   required
                 />
+                {fieldErrors.fullName && (
+                  <p className="text-xs text-error-600 mt-1">{fieldErrors.fullName}</p>
+                )}
               </div>
 
               <div>
@@ -240,11 +253,14 @@ const RegisterPage = () => {
                     type="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="input-field pl-10"
+                    className={`input-field pl-10 ${fieldErrors.email ? 'border-error-300 focus:ring-error-600' : ''}`}
                     placeholder="Enter your email"
                     required
                   />
                 </div>
+                {fieldErrors.email && (
+                  <p className="text-xs text-error-600 mt-1">{fieldErrors.email}</p>
+                )}
               </div>
 
               <div>
@@ -259,10 +275,13 @@ const RegisterPage = () => {
                     type={showPassword ? 'text' : 'password'}
                     value={formData.password}
                     onChange={handleChange}
-                    className="input-field pl-10 pr-10"
+                    className={`input-field pl-10 pr-10 ${fieldErrors.password ? 'border-error-300 focus:ring-error-600' : ''}`}
                     placeholder="Create a password (min 8 characters)"
                     required
                   />
+                {fieldErrors.password && (
+                  <p className="text-xs text-error-600 mt-1">{fieldErrors.password}</p>
+                )}
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
@@ -285,10 +304,13 @@ const RegisterPage = () => {
                     type={showConfirmPassword ? 'text' : 'password'}
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    className="input-field pl-10 pr-10"
+                    className={`input-field pl-10 pr-10 ${fieldErrors.confirmPassword ? 'border-error-300 focus:ring-error-600' : ''}`}
                     placeholder="Confirm your password"
                     required
                   />
+                {fieldErrors.confirmPassword && (
+                  <p className="text-xs text-error-600 mt-1">{fieldErrors.confirmPassword}</p>
+                )}
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}

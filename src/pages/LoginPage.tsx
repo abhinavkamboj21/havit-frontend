@@ -88,11 +88,21 @@ const LoginPage = () => {
     setError('');
 
     try {
+      // Clear any auth redirect message before attempting login
+      if (sessionStorage.getItem('authRedirectMessage')) {
+        sessionStorage.removeItem('authRedirectMessage');
+      }
       await login(email, password);
       // Note: ProfileGuard will handle redirect to onboarding if profile is incomplete
       navigate(from, { replace: true });
     } catch (err: any) {
       setError(err.message || 'Invalid email or password');
+      // If backend redirected us here with a message
+      const redirectMsg = sessionStorage.getItem('authRedirectMessage');
+      if (redirectMsg) {
+        setError(redirectMsg);
+        sessionStorage.removeItem('authRedirectMessage');
+      }
     } finally {
       setIsLoading(false);
     }

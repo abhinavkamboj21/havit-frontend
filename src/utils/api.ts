@@ -1,5 +1,18 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
 
+export class ApiError extends Error {
+  code?: string;
+  status?: number;
+  fieldErrors?: Array<{ field: string; message: string }>;
+  constructor(message: string, options?: { code?: string; status?: number; fieldErrors?: Array<{ field: string; message: string }> }) {
+    super(message);
+    this.name = 'ApiError';
+    this.code = options?.code;
+    this.status = options?.status;
+    this.fieldErrors = options?.fieldErrors;
+  }
+}
+
 // Helper function for authenticated requests
 export const authenticatedRequest = async (url: string, options: RequestInit = {}) => {
   const token = localStorage.getItem('token');
@@ -14,27 +27,30 @@ export const authenticatedRequest = async (url: string, options: RequestInit = {
   };
   
   const response = await fetch(`${API_BASE_URL}${url}`, config);
-  
-  // Don't automatically redirect on 401, let the calling code handle it
   return response;
 };
 
 // Helper function for error handling
 export const handleApiError = (response: Response, data: any) => {
-  switch (response.status) {
-    case 400:
-      return data.error || 'Invalid request';
-    case 401:
-      return 'Please login again';
-    case 403:
-      return 'Access denied';
-    case 404:
-      return 'Resource not found';
-    case 500:
-      return 'Server error. Please try again later';
-    default:
-      return 'An unexpected error occurred';
+  const message = data?.message || data?.error || 'An unexpected error occurred';
+  const code = data?.code;
+  const fieldErrors = data?.fieldErrors;
+  const status = response.status;
+
+  // On unauthorized, redirect to login and show message
+  if (status === 401 || code === 'UNAUTHORIZED') {
+    try {
+      sessionStorage.setItem('authRedirectMessage', message || 'Please login to continue.');
+      // Optionally clear token
+      localStorage.removeItem('token');
+    } catch {}
+    // Trigger redirect
+    if (typeof window !== 'undefined') {
+      window.location.href = '/login';
+    }
   }
+
+  return new ApiError(message, { code, status, fieldErrors });
 };
 
 // Authentication APIs
@@ -52,7 +68,7 @@ export const authAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data;
@@ -71,7 +87,7 @@ export const authAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data;
@@ -90,7 +106,7 @@ export const authAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data;
@@ -104,7 +120,7 @@ export const authAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     console.log('🔍 getProfile API raw response:', data);
@@ -129,7 +145,7 @@ export const authAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data;
@@ -144,7 +160,7 @@ export const authAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data;
@@ -159,7 +175,7 @@ export const authAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data;
@@ -174,7 +190,7 @@ export const authAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data;
@@ -197,7 +213,7 @@ export const challengeAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data;
@@ -209,7 +225,7 @@ export const challengeAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data;
@@ -221,7 +237,7 @@ export const challengeAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data;
@@ -233,7 +249,7 @@ export const challengeAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data;
@@ -245,7 +261,7 @@ export const challengeAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data;
@@ -267,7 +283,7 @@ export const challengeAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data;
@@ -282,7 +298,7 @@ export const challengeAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data;
@@ -294,7 +310,7 @@ export const challengeAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data;
@@ -306,7 +322,7 @@ export const challengeAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data;
@@ -327,7 +343,7 @@ export const challengeAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data;
@@ -375,7 +391,7 @@ export const walletAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data.data;
@@ -392,7 +408,7 @@ export const walletAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data.data;
@@ -417,7 +433,7 @@ export const walletAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data.data;
@@ -444,7 +460,7 @@ export const walletAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data.data;
@@ -456,7 +472,7 @@ export const walletAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data.data;
@@ -468,7 +484,7 @@ export const walletAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data.data;
@@ -490,7 +506,7 @@ export const walletAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data.data;
@@ -513,7 +529,7 @@ export const walletAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data.data;
@@ -527,7 +543,7 @@ export const walletAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data;
@@ -552,7 +568,7 @@ export const walletAPI = {
     console.log('📋 Payment verification response:', data);
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data;
@@ -568,7 +584,7 @@ export const walletAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data;
@@ -593,7 +609,7 @@ export const walletAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data;
@@ -614,7 +630,7 @@ export const emailAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data;
@@ -632,7 +648,7 @@ export const emailAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data;
@@ -654,7 +670,7 @@ export const passwordResetAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data;
@@ -672,7 +688,7 @@ export const passwordResetAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data;
@@ -691,7 +707,7 @@ export const passwordResetAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data;
@@ -712,7 +728,7 @@ export const smsAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data;
@@ -731,7 +747,7 @@ export const smsAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data;
@@ -745,7 +761,7 @@ export const streaksAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data;
@@ -760,7 +776,7 @@ export const streaksAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data;
@@ -785,7 +801,7 @@ export const achievementsAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data;
@@ -800,7 +816,7 @@ export const achievementsAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data;
@@ -811,7 +827,7 @@ export const achievementsAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data;
@@ -822,7 +838,7 @@ export const achievementsAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data;
@@ -833,7 +849,7 @@ export const achievementsAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data;
@@ -844,7 +860,7 @@ export const achievementsAPI = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(handleApiError(response, data));
+      throw handleApiError(response, data);
     }
 
     return data;

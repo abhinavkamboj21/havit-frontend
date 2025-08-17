@@ -16,6 +16,7 @@ const OnboardingPage = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [currentStep, setCurrentStep] = useState(1);
   
   // SMS Verification states
@@ -200,6 +201,7 @@ const OnboardingPage = () => {
         break;
     }
     setError('');
+    setFieldErrors({});
     return true;
   };
 
@@ -240,6 +242,13 @@ const OnboardingPage = () => {
     } catch (err: any) {
       console.error('❌ Profile update error:', err);
       setError(err.message || 'Failed to save profile. Please try again.');
+      if (err.code === 'VALIDATION_ERROR' && Array.isArray(err.fieldErrors)) {
+        const map: Record<string, string> = {};
+        err.fieldErrors.forEach((fe: any) => {
+          if (fe?.field && fe?.message) map[fe.field] = fe.message;
+        });
+        setFieldErrors(map);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -268,10 +277,13 @@ const OnboardingPage = () => {
             type="text"
             value={formData.fullName}
             onChange={handleChange}
-            className="input-field pl-10"
+            className={`input-field pl-10 ${fieldErrors.fullName ? 'border-error-300 focus:ring-error-600' : ''}`}
             placeholder="Enter your full name"
             required
           />
+          {fieldErrors.fullName && (
+            <p className="text-xs text-error-600 mt-1">{fieldErrors.fullName}</p>
+          )}
         </div>
       </div>
 
@@ -287,11 +299,14 @@ const OnboardingPage = () => {
             type="tel"
             value={formData.phoneNumber}
             onChange={handleChange}
-            className="input-field pl-10"
+            className={`input-field pl-10 ${fieldErrors.phoneNumber ? 'border-error-300 focus:ring-error-600' : ''}`}
             placeholder="9876543210"
             maxLength={10}
             required
           />
+          {fieldErrors.phoneNumber && (
+            <p className="text-xs text-error-600 mt-1">{fieldErrors.phoneNumber}</p>
+          )}
         </div>
         <p className="text-xs text-morning-500 mt-1">
           🇮🇳 Enter 10-digit number (we'll add +91 automatically)
@@ -412,9 +427,12 @@ const OnboardingPage = () => {
               type="date"
               value={formData.dateOfBirth}
               onChange={handleChange}
-              className="input-field pl-10"
+              className={`input-field pl-10 ${fieldErrors.dateOfBirth ? 'border-error-300 focus:ring-error-600' : ''}`}
               required
             />
+            {fieldErrors.dateOfBirth && (
+              <p className="text-xs text-error-600 mt-1">{fieldErrors.dateOfBirth}</p>
+            )}
           </div>
         </div>
 
@@ -427,9 +445,12 @@ const OnboardingPage = () => {
             name="gender"
             value={formData.gender}
             onChange={handleChange}
-            className="input-field"
+            className={`input-field ${fieldErrors.gender ? 'border-error-300 focus:ring-error-600' : ''}`}
             required
           >
+          {fieldErrors.gender && (
+            <p className="text-xs text-error-600 mt-1">{fieldErrors.gender}</p>
+          )}
             <option value="">Select gender</option>
             <option value="Male">Male</option>
             <option value="Female">Female</option>
@@ -451,10 +472,13 @@ const OnboardingPage = () => {
             type="text"
             value={formData.city}
             onChange={handleChange}
-            className="input-field pl-10"
+            className={`input-field pl-10 ${fieldErrors.city ? 'border-error-300 focus:ring-error-600' : ''}`}
             placeholder="Enter your city"
             required
           />
+          {fieldErrors.city && (
+            <p className="text-xs text-error-600 mt-1">{fieldErrors.city}</p>
+          )}
         </div>
       </div>
 
@@ -470,9 +494,12 @@ const OnboardingPage = () => {
             type="text"
             value={formData.occupation}
             onChange={handleChange}
-            className="input-field pl-10"
+            className={`input-field pl-10 ${fieldErrors.occupation ? 'border-error-300 focus:ring-error-600' : ''}`}
             placeholder="Your profession"
           />
+          {fieldErrors.occupation && (
+            <p className="text-xs text-error-600 mt-1">{fieldErrors.occupation}</p>
+          )}
         </div>
       </div>
 
@@ -488,9 +515,12 @@ const OnboardingPage = () => {
             type="text"
             value={formData.institutionName}
             onChange={handleChange}
-            className="input-field pl-10"
+            className={`input-field pl-10 ${fieldErrors.institutionName ? 'border-error-300 focus:ring-error-600' : ''}`}
             placeholder="Where do you work/study?"
           />
+          {fieldErrors.institutionName && (
+            <p className="text-xs text-error-600 mt-1">{fieldErrors.institutionName}</p>
+          )}
         </div>
       </div>
 

@@ -140,7 +140,7 @@ const getTimeWindowInfo = (wakeUpTime: string) => {
     
     return {
       status: 'before',
-      message: `Completion window opens in ${timeFormat.humanReadable}`,
+      message: `CHECK-IN window opens in ${timeFormat.humanReadable}`,
       hoursRemaining: timeFormat.hours,
       minutesRemaining: timeFormat.minutes,
       secondsRemaining: timeFormat.seconds,
@@ -152,7 +152,7 @@ const getTimeWindowInfo = (wakeUpTime: string) => {
     // After window closes
     return {
       status: 'after',
-      message: 'Completion window has closed',
+      message: 'CHECK-IN window has closed. The challenge will be evaluated and marked as failed/completed in a few minutes.',
       hoursRemaining: 0,
       minutesRemaining: 0,
       secondsRemaining: 0,
@@ -214,6 +214,7 @@ const DashboardPage = () => {
   // Verification info visibility
   const [showVerificationInfo, setShowVerificationInfo] = useState(false);
   const [isVerificationInfoHovered, setIsVerificationInfoHovered] = useState(false);
+  
   
   // Calendar modal state
   const [showCalendar, setShowCalendar] = useState(false);
@@ -407,8 +408,26 @@ const DashboardPage = () => {
   };
 
   const handleCancelChallenge = async (challengeId: number) => {
+    const confirmed = window.confirm(
+      'Are you sure you want to cancel this challenge?\n\nThis action cannot be undone.'
+    );
+    if (!confirmed) {
+      return;
+    }
     try {
+      // Capture forfeit amount before removal from local state
+      const challengeBeingCancelled = challenges.find((c) => c.id === challengeId);
+      const forfeitAmount = challengeBeingCancelled?.forfeitAmount ?? 0;
+
       await cancelChallenge(challengeId);
+
+      // Refresh wallet and stats so user sees updated balance immediately
+      await Promise.all([refreshUser(), refreshStats()]);
+
+      // Notify user about refund
+      alert(
+        `✅ Challenge cancelled successfully.\n\n₹${forfeitAmount.toFixed(2)} has been refunded to your wallet.`
+      );
     } catch (error) {
       console.error('Failed to cancel challenge:', error);
     }
@@ -874,7 +893,7 @@ Your payment may have been processed successfully on Razorpay's side. Please che
                         Wake up at {fallbackTodayChallenge.wakeUpTime}
                       </h3>
                       <p className="text-sm text-morning-600">
-                        Forfeit: ₹{fallbackTodayChallenge.forfeitAmount}
+                        Forfeit amount: ₹{fallbackTodayChallenge.forfeitAmount}
                       </p>
                     </div>
                   </div>
@@ -921,7 +940,7 @@ Your payment may have been processed successfully on Razorpay's side. Please che
                             <div className="flex items-center justify-center space-x-3 mb-4">
                       <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
                               <span className="text-sm font-bold text-emerald-800 uppercase tracking-wider bg-emerald-100 px-3 py-1 rounded-full">
-                                ✅ COMPLETION WINDOW OPEN
+                                ✅ CHECK-IN WINDOW OPEN
                               </span>
                       <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
                             </div>
@@ -936,9 +955,9 @@ Your payment may have been processed successfully on Razorpay's side. Please che
                               </div>
                             </div>
                             
-                            <p className="text-sm font-medium">
+                            {/* <p className="text-sm font-medium">
                               🚀 Quick completion available! Mark as completed with one click.
-                            </p>
+                            </p> */}
                             
                             {/* Urgency indicator */}
                             {timeWindowInfo.totalSeconds <= 60 && (
@@ -956,7 +975,7 @@ Your payment may have been processed successfully on Razorpay's side. Please che
                           <div>
                             <div className="flex items-center space-x-2 mb-3">
                               <Clock className="w-4 h-4 text-cyan-600" />
-                              <span className="text-sm font-medium text-cyan-800">Completion window opens in:</span>
+                              <span className="text-sm font-medium text-cyan-800">CHECK-IN window opens in:</span>
                             </div>
                             
                             <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-cyan-500 via-cyan-600 to-blue-600 p-6 mb-3 shadow-xl">
@@ -994,20 +1013,8 @@ Your payment may have been processed successfully on Razorpay's side. Please che
                         )}
                       </div>
 
-                      {/* Cancellation Lock Notice */}
-                      {!canCancel && (
-                        <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-3">
-                          <div className="flex items-center space-x-2">
-                            <AlertCircle className="w-4 h-4 text-orange-600" />
-                            <span className="text-sm font-medium text-orange-800">
-                              🔒 Challenge cancellation locked on challenge day
-                            </span>
-                          </div>
-                          <p className="text-xs text-orange-700 mt-1">
-                            Cancellation was only allowed until 11:59 PM the night before. Your challenge is now locked in!
-                          </p>
-                        </div>
-                      )}
+                      {/* Cancellation Lock Notice (hidden after window closes) */}
+
 
                       {/* Action Buttons */}
                       <div className="flex space-x-3">
@@ -1058,7 +1065,7 @@ Your payment may have been processed successfully on Razorpay's side. Please che
                           </button>
                           {!canCancel && (
                             <span className="bg-gray-300 text-gray-600 px-3 py-2 rounded-lg text-xs sm:text-sm font-medium cursor-not-allowed whitespace-nowrap shrink-0">
-                              🔒 <span className="hidden sm:inline">Cancellation </span>Locked
+                              🔒 Cancellation  Locked
                             </span>
                           )}
                         </div>
@@ -1073,6 +1080,14 @@ Your payment may have been processed successfully on Razorpay's side. Please che
                             <Info className="w-3.5 h-3.5" />
                             What do these options mean?
                           </button>
+                          {!canCancel && (
+                            <span className="ml-2 relative group inline-flex items-center">
+                              <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-orange-200 text-orange-800 text-[10px] font-bold cursor-default">i</span>
+                              <span className="absolute left-0 z-10 hidden group-hover:block mt-2 w-80 p-3 rounded-md border border-orange-200 bg-white text-morning-700 text-xs shadow-lg">
+                                Challenge cancellation is only allowed until 11:59 PM the night before. Your challenge is now locked in!
+                              </span>
+                            </span>
+                          )}
                           {(showVerificationInfo || isVerificationInfoHovered) && (
                             <div className="mt-1 text-xs text-morning-600 bg-morning-50 border border-morning-200 rounded-md p-2">
                               <div><span className="font-medium">Manual</span>: quick check-in without photo proof.</div>
@@ -1082,15 +1097,19 @@ Your payment may have been processed successfully on Razorpay's side. Please che
                         </div>
                         </>
                       ) : (
-                        <div className="mt-3 flex items-center flex-wrap gap-2">
-                          <button
-                            className="bg-gray-300 text-gray-500 rounded-lg font-medium cursor-not-allowed flex-1 text-lg py-4"
-                            disabled={true}
-                            title="Check-in locked outside the time window"
-                          >
-                            🔒 Locked
-                          </button>
-                        </div>
+                        <>
+                          {timeWindowInfo.status !== 'after' && (
+                            <div className="mt-3 flex items-center flex-wrap gap-2">
+                              <button
+                                className="bg-gray-300 text-gray-500 rounded-lg font-medium cursor-not-allowed flex-1 text-lg py-4"
+                                disabled={true}
+                                title="CHECK-IN is locked outside the time window"
+                              >
+                                🔒 Cancellation Locked
+                              </button>
+                            </div>
+                          )}
+                        </>
                       )}
                     </div>
                   );
@@ -1159,20 +1178,24 @@ Your payment may have been processed successfully on Razorpay's side. Please che
                     </div>
                     <div className="text-right">
                       <p className="text-sm text-morning-600">
-                        Forfeit: ₹{challenge.forfeitAmount}
+                        Forfeit amount: ₹{challenge.forfeitAmount}
                       </p>
                       {(() => {
                         const canCancel = isCancellationAllowed(challenge.challengeDate);
                         
                         // If cancellation is locked (challenge date is today), show locked button
                         if (!canCancel) {
+                          // Hide locked button after window closes
+                          if (getTimeWindowInfo(challenge.wakeUpTime).status === 'after') {
+                            return null;
+                          }
                           return (
                             <button
                               className="bg-gray-300 text-gray-500 px-2 py-1 rounded text-xs font-medium mt-1 cursor-not-allowed"
                               disabled={true}
                               title="Cancellation locked on challenge day"
                             >
-                              🔒 Locked
+                              🔒 Cancellation Locked
                             </button>
                           );
                         }
@@ -1213,13 +1236,13 @@ Your payment may have been processed successfully on Razorpay's side. Please che
 
         {/* Challenge Pledges Overview */}
         <div className="mb-8">
-          <h2 className="text-xl font-semibold text-morning-900 mb-4">Challenge Pledges</h2>
+          <h2 className="text-xl font-semibold text-morning-900 mb-4">Challenge Forfeits</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Money Pledged on Next Challenge */}
             <div className="card border-l-4 border-cyan-500 hover:shadow-lg transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-morning-600 mb-1 font-medium">Next Challenge Pledge</p>
+                  <p className="text-sm text-morning-600 mb-1 font-medium">Next Challenge Forfeit Amount</p>
                   <p className="text-3xl font-bold text-cyan-600">
                     ₹{getNextChallenge()?.forfeitAmount || 0}
                   </p>
@@ -1240,7 +1263,7 @@ Your payment may have been processed successfully on Razorpay's side. Please che
             <div className="card border-l-4 border-orange-500 hover:shadow-lg transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-morning-600 mb-1 font-medium">Total Pledged</p>
+                  <p className="text-sm text-morning-600 mb-1 font-medium">Total Forfeit Amount</p>
                   <p className="text-3xl font-bold text-orange-600">
                     ₹{getPendingChallenges().reduce((total, challenge) => total + challenge.forfeitAmount, 0)}
                   </p>
@@ -1343,7 +1366,7 @@ Your payment may have been processed successfully on Razorpay's side. Please che
                         {new Date(challenge.challengeDate).toLocaleDateString()}
                       </p>
                       <p className="text-sm text-morning-600">
-                        {challenge.wakeUpTime} • ₹{challenge.forfeitAmount}
+                        {challenge.wakeUpTime} • Forfeit amount: ₹{challenge.forfeitAmount}
                       </p>
                     </div>
                   </div>
@@ -1354,8 +1377,12 @@ Your payment may have been processed successfully on Razorpay's side. Please che
                     }`}>
                       {challenge.isSuccessful ? 'COMPLETED' : challenge.status === 'PENDING' ? 'PENDING' : 'FAILED'}
                     </p>
-                    {challenge.isSuccessful && challenge.winningsAmount && (
-                      <p className="text-xs text-success-600">+₹{challenge.winningsAmount}</p>
+                    {challenge.isSuccessful ? (
+                      <p className="text-xs text-success-600">
+                        {challenge.winningsAmount && challenge.winningsAmount > 0 ? `+₹${challenge.winningsAmount}` : '+winnings(TBD)'}
+                      </p>
+                    ) : (
+                      <p className="text-xs text-error-600">-₹{(challenge.actualForfeitAmount ?? challenge.forfeitAmount ?? 0)}</p>
                     )}
                   </div>
                 </div>
@@ -1732,6 +1759,7 @@ Your payment may have been processed successfully on Razorpay's side. Please che
           </div>
         </div>
       )}
+      
     </div>
   );
 };
